@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: darkgray;
+        }
+
+        .popup[popover] { 
+            position: absolute;
+            margin: 0;
+        }
+
+        .popup::backdrop {
+            opacity: 80%;
+            background-color: dimgray;
+        }
+    </style>
+    <title>Therapy Dashboard</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./scripts/main.jsx"></script>
+</body>
+</html>
