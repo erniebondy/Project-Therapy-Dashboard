@@ -19,13 +19,13 @@ function Clients() {
     }, []);
 
     async function getUserClients() {
-        const rsp = await fetch(`${API_URL}/db/user/${userId}/clients`);
+        const rsp = await fetch(`${API_URL}/user/${userId}/clients`);
         const {data} = await rsp.json();
         setUserClients(data);
     }
 
     // async function getClientDetails(clientId) {
-    //     const rsp = await fetch(`${API_URL}/db/user/${userId}/client/${clientId}/details`);
+    //     const rsp = await fetch(`${API_URL}/user/${userId}/client/${clientId}/details`);
     //     const {data} = await rsp.json();
     //     setClientDetails((data) ? data : '');
     // }
@@ -50,7 +50,7 @@ function Clients() {
     async function showPopup(event) {
 
         // Fetch unassigned clients
-        const rsp = await fetch(`${API_URL}/db/user/${userId}/unassigned-clients`);
+        const rsp = await fetch(`${API_URL}/user/${userId}/unassigned-clients`);
         const {data} = await rsp.json();
         
         if (!data)
@@ -66,7 +66,7 @@ function Clients() {
     }
 
     async function addClientToUser(client) {
-        const rsp = await fetch(`${API_URL}/db/user/client`,{
+        const rsp = await fetch(`${API_URL}/user/client`,{
             method: 'POST',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, clientId: client.id})
@@ -79,7 +79,7 @@ function Clients() {
     }
 
     async function deleteUserClient(client) {
-        const rsp = await fetch(`${API_URL}/db/user/client`, {
+        const rsp = await fetch(`${API_URL}/user/client`, {
             method: 'DELETE',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, clientId: client.id})
@@ -95,7 +95,7 @@ function Clients() {
     }
 
     async function saveClientDetails() {
-        const rsp = await fetch(`${API_URL}/db/client/details`, {
+        const rsp = await fetch(`${API_URL}/client/details`, {
             method: 'POST',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, clientId: selectedClient.id, clientDetails})

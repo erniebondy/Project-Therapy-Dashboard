@@ -24,7 +24,7 @@ function ClientNew() {
         client.nickname = '';
 
         // Insert into database
-        const rsp = await fetch(`${API_URL}/db/client`, {
+        const rsp = await fetch(`${API_URL}/client`, {
             method: 'POST',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify(client)

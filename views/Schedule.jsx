@@ -111,7 +111,7 @@ function Schedule() {
 
     async function handleSaveClick() {
         const key = `${currentDate.getFullYear()}_${currentDate.getMonth()}`;
-        const rsp = await fetch(`${API_URL}/db/user/schedule/month`,{
+        const rsp = await fetch(`${API_URL}/user/schedule/month`,{
             method: 'PUT',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, key, cellsText})
@@ -123,13 +123,13 @@ function Schedule() {
 
     async function fetchCellsText(date) {
         const key = `${date.getFullYear()}_${date.getMonth()}`;
-        const rsp = await fetch(`${API_URL}/db/user/${userId}/schedule/month/${key}`);
+        const rsp = await fetch(`${API_URL}/user/${userId}/schedule/month/${key}`);
         const {data} = await rsp.json();
         setCellsText(JSON.parse(data));
     }
 
     async function fetchTasks() {
-        const rsp = await fetch(`${API_URL}/db/user/${userId}/tasks`);
+        const rsp = await fetch(`${API_URL}/user/${userId}/tasks`);
         const {data} = await rsp.json();
         if (data)
             setTasks(JSON.parse(data));
@@ -141,7 +141,7 @@ function Schedule() {
         const task = {text, priority: 0, completed: false};
         const next = (tasks) ? [...tasks, task] : [task];
 
-        const rsp = await fetch(`${API_URL}/db/user/tasks`, {
+        const rsp = await fetch(`${API_URL}/user/tasks`, {
             method: 'POST',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, tasks: next})
@@ -160,7 +160,7 @@ function Schedule() {
         const task = next[idx];
         task.completed = e.target.checked;
 
-        const rsp = await fetch(`${API_URL}/db/user/tasks`, {
+        const rsp = await fetch(`${API_URL}/user/tasks`, {
             method: 'PUT',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, tasks: next})
@@ -175,7 +175,7 @@ function Schedule() {
 
     async function handleRemoveTask(idx) {
         const next = tasks.toSpliced(idx, 1);
-        const rsp = await fetch(`${API_URL}/db/user/task`, {
+        const rsp = await fetch(`${API_URL}/user/task`, {
             method: 'DELETE',
             headers: {'content-type': 'application/json'},
             body: JSON.stringify({userId, tasks: next})
