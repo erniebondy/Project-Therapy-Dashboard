@@ -2,6 +2,8 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import { AppContext } from '../components/App';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Login() {
 
     const navigate = useNavigate();
@@ -10,25 +12,47 @@ function Login() {
     const {setUserId} = useContext(AppContext);
 
     async function handleLogin(username, password) {
-        // const loggedIn = await login(username, password);
-        // setLoggedIn(loggedIn);
 
-        // props.useStateSetUserId(13);
-        setUserId(99);
+        if (username === null || password === null)
+            return;
 
-        navigate('/profile');
-        if (loggedIn) {
+        if (username.trim().length < 1 || password.trim().length < 1)
+            return;
+
+        const rsp = await fetch(`${API_URL}/login/${username}/${password}`);
+        const {ok, userId} = await rsp.json();
+
+        console.log('ok userId', ok, userId);
+        if (ok) {
+            setUserId(userId);
             navigate('/profile');
         }
     }
 
+    async function test() {
+        const username = "ernie";
+        const password = "123";
+        const rsp = await fetch(`${API_URL}/login`, {
+            method:'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+
+        const {ok} = await rsp.json();
+        console.log('ok', ok);
+    }
+
     return <>
-        <h2>Login</h2>        
+        <h2>Login</h2>
+
+        <button onClick={test}>TEST</button>
+        <br /><br />
+        
         <label htmlFor="username">Username</label>
-        <input onChange={(ev) => setUsername(ev.target.value)} type="text" name="username" id="username" placeholder="username" autoComplete="username" required />
+        <input onChange={e => setUsername(e.target.value)} type="text" name="username" id="username" placeholder="username" autoComplete="username" required />
         <br />
         <label htmlFor="password">Password</label>
-        <input onChange={(ev) => setPassword(ev.target.value)} type="password" name="password" id="password" required />
+        <input onChange={e => setPassword(e.target.value)} type="password" name="password" id="password" required />
         <br />
         <button onClick={() => handleLogin(username, password)}>Login</button>
 

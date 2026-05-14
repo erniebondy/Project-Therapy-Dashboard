@@ -163,14 +163,19 @@ function Clients() {
                         <br /><br />
                         <textarea name="client-details" 
                                 id="client-details" 
-                                value={clientDetails} 
+                                value={clientDetails ? clientDetails : ''} 
                                 onChange={e => {
-                                const value = e.target.value;
-                                setClientDetails(value);
-                                selectedClient.details = value;
+                                    const value = e.target.value;
+                                    setClientDetails(value);
+                                    selectedClient.details = value;
                                 }}
                         ></textarea>
                     </>}
+                </div>
+                <div id="milestones" style={{border: '1px solid red'}}>
+                    <h4>Milestones</h4>
+                    {/* <button onClick={() => addMilestone(selectedClient.id)}>Add</button> */}
+                    {/* Definition | Expected Completion Date | Actual Completion Date */}
                 </div>
             </div>
         }

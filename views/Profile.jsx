@@ -17,6 +17,7 @@ function Profile(props) {
             </button>
             <Link to={'clients'}>Clients</Link>{' '}
             <Link to={'schedule'}>Schedule</Link>{' '}
+            <Link to={'milestones'}>Milestones</Link>{' '}
             <Link to={'/'}>Logout</Link>
         </nav>
         <Outlet />

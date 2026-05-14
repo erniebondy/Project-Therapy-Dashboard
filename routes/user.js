@@ -5,6 +5,93 @@ const sql = require('sqlite3');
 
 const dbPath = './db/dev.sqlite3';
 
+// Make Enum class
+
+router.put('/client/milestones', async (req, rsp) => {
+    const {userId, selectedClient: client} = req.body;
+
+    if (client.milestones == null)
+        return rsp.send({ok: true});
+    if (client.milestones.length < 1)
+        return rsp.send({ok: true});
+
+    const db = new sql.Database(dbPath);
+    
+    // Insert new milestones
+    const newMs = client.milestones.filter(ms => ms.dbAction === 1); // New
+
+    let error = false;
+
+    if (newMs.length > 0) {
+        error = await new Promise(res => {
+            db.serialize(() => {
+                const stmt = db.prepare('INSERT INTO CLIENT_MILESTONES VALUES (?, ?, ?, ?, ?, ?)');
+                for (const ms of newMs) {
+                    const params = [userId, client.id, ms.id, ms.expect, ms.actual, ms.completed];
+                    stmt.run(params, function (err) {
+                        if (err) {
+                            console.error('DB ERROR!', err);
+                            stmt.finalize();
+                            return res(true);
+                        }
+                    });
+                }
+                stmt.finalize();
+            });
+            res(false);
+        });
+    }
+
+    if (error)
+        return rsp.send({ok: false});
+
+    // Update current milestones
+    const updateMs = client.milestones.filter(ms => ms.dbAction === 2) // Modified
+
+    if (updateMs.length > 0) {
+        error = await new Promise(res => {
+            db.serialize(() => {
+                const stmt = db.prepare(
+                    `UPDATE CLIENT_MILESTONES SET expected = ?, actual = ?, completed = ? 
+                    WHERE user_id = ? AND client_id = ? AND milestone_id = ?`
+                );
+                for (const ms of updateMs) {
+                    const params = [ms.expected, ms.actual, ms.completed, userId, client.id, ms.id];
+                    stmt.run(params, function (err) {
+                        if (err) {
+                            console.error('DB ERROR!', err);
+                            stmt.finalize();
+                            return res(true);
+                        }
+                    });
+                }
+                stmt.finalize();
+                return res(false);
+            });
+        });
+    }
+
+    if (error)
+        return rsp.send({ok: false});
+
+    return rsp.send({ok: true});
+});
+
+router.get('/:userId/client/:clientId/milestones', (req, rsp) => {
+    const {userId, clientId} = req.params;
+    const db = new sql.Database(dbPath);
+    db.all(`SELECT CM.*, CM.milestone_id AS id, M.definition FROM CLIENT_MILESTONES CM
+        LEFT JOIN MILESTONES M ON CM.milestone_id = M.id
+        WHERE user_id = ? AND client_id = ?`, [userId, clientId], function (err, rows) {
+        if (err) {
+            console.error('DB ERROR!', err);
+            return rsp.send({data: null});
+        }
+        for (const r of rows) r.dbAction = 0;
+        rsp.send({data: rows});
+    });
+});
+
 router.put('/', (req, rsp) => {
     const {user} = req.body;
     const db = new sql.Database(dbPath);
@@ -198,18 +285,21 @@ router.post('/client', (req, rsp) => {
 
 });
 
-// Similar QUERIES
+// Similar QUERIES - Pass 'unassigned' as a parameter
 router.get('/:id/clients', async (req, rsp) => {
     const {id} = req.params;
     const db = new sql.Database(dbPath);
     const rows = await new Promise(res => {
         db.all(
-            `SELECT C.*, C.fname || ' ' || C.lname AS fullname, strftime('%Y', date()) - strftime('%Y', dob) AS age, CD.details
+            `SELECT 
+                C.*
+                ,C.fname || ' ' || C.lname AS fullname
+                ,strftime('%Y', date()) - strftime('%Y', dob) AS age
+                ,CD.details
             FROM CLIENTS C
             LEFT JOIN USERS_CLIENTS UC on C.id = UC.client_id
             LEFT JOIN CLIENT_DETAILS CD ON C.id = CD.client_id AND CD.user_id = ?
-            WHERE UC.user_id = ?`,
-            [id, id], function (err, rows) {
+            WHERE UC.user_id = ?`, [id, id], function (err, rows) {
             if (err)
                 console.error('DB ERROR', err);
             res(rows);

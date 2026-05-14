@@ -23,65 +23,54 @@ app.use('/user', require('./routes/user'));
 app.use('/client', require('./routes/client'));
 app.use('/admin', require('./routes/admin'));
 
+app.get('/login/:username/:password', (req, rsp) => {
+    const {username, password} = req.params;
+    console.log(username, password);
 
-app.post('/login', async (req, rsp) => {
-
-    // get username & password
-    const {username, password} = req.body;
-    console.assert(username != null && password != null);
-
-    // get user by username
     const db = new sql.Database(dbPath);
-    // const db = await sql.open({filename: dbPath, driver: sql3.Database});
-    
-    const row = await new Promise((res, rej) => {
-        db.get('SELECT * FROM USERS WHERE username = ?', username, (err, row) => {
-            return res(row);
-        });
+    let ok = false;
+    let userId = -1;
+    db.each('SELECT * FROM USERS WHERE username = ?', username, function (err, row) {
+        if (err) {
+            console.error('DB ERROR!', err);
+            return rsp.send({ok: false});
+        }
+        const {hashed_password: dbHashedPassword, salt: dbSalt} = row;
+        const hashedPassword = crypto.pbkdf2Sync(password, dbSalt, 310000, 32, 'sha256');
+        if (crypto.timingSafeEqual(hashedPassword, Buffer.from(dbHashedPassword, 'base64'))) {
+            userId = row.id;
+            return ok = true;
+        }
+    }, function (err, count) {
+        if (err) {
+            console.error('DB ERROR!', err);
+            return rsp.send({ok: false});
+        }
+        console.log('in complete');
+        rsp.send({ok, userId});
     });
 
-    if (!row) {
-        addNewUser(username, password);
-        return rsp.send({message: 'User logged in!', loggedIn: true});
-    }
-    
-    // Username found
-    if (!passwordMatch({dbPassword: row.hashed_password, dbSalt: row.salt})) {
-        addNewUser(username, password);
-        return rsp.send({message: 'User logged in!', loggedIn: true});
-    }
+});
 
-    // User already exists
-    return rsp.send({message: 'User exists!', loggedIn: true});
+app.post('/login', async (req, rsp) => {
+    const {username, password} = req.body;
+    console.log('posting', username, password);
 
-    function passwordMatch(dbData) {
-        
-        const {dbPassword, dbSalt} = dbData;
-        const hashedPassword = crypto.pbkdf2Sync(password, dbSalt, 310000, 32, 'sha256');
-
-        return crypto.timingSafeEqual(hashedPassword, Buffer.from(dbPassword, 'base64'));
-    }
-
-    function addNewUser(username, password) {
-
-        const salt = crypto.randomBytes(16).toString('base64');        
-        const hashedPassword = crypto.pbkdf2Sync(password, salt, 310000, 32, 'sha256').toString('base64');
-
-
+    try {        
+        const salt = crypto.randomBytes(16).toString('base64');
+        const hashedPassword = crypto.pbkdf2Sync(password, salt,310000, 32, 'sha256').toString('base64');
+        const db = new sql.Database(dbPath);
         const params = [username, hashedPassword, salt];
-        db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES(?, ?, ?)', params);
+        db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES (?, ?, ?)', params, function (err) {
+            if (err)
+                throw new Error(err.message);
+            rsp.send({ok: true});
+        });
 
-        // console.log('value', value); // Could get value.lastID
-
-        // db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES(?, ?, ?)', 
-        //     [username, hashedPassword, salt], 
-        //     function (err) {
-        //         if (err)
-        //             console.error('DB ERROR!');
-        //     }
-        // );
+    } catch (err) {
+        console.log('DB ERROR!', err);
+        rsp.send({ok: false});
     }
-
 });
 
 app.listen(port, () => {
