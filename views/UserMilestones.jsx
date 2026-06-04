@@ -77,7 +77,7 @@ function UserMilestones() {
             const rsp = await fetch(`${API_URL}/user/${userId}/client/${client.id}/milestones`)
             const {data} = await rsp.json();
             client.milestones = data;
-            client.modified = false;
+            // client.modified = false;
         }
         setUserClients(data);
     }
@@ -101,10 +101,19 @@ function UserMilestones() {
         ms.dbAction = dbActions.update;
         ms.completed = e.target.checked;
         setSelectedClient(prev => {
-            const next = {...prev, modified: true};
+            // const next = {...prev, modified: true};
+            const next = {...prev};
             return next;
         });
         setSaveButtonDisabled(false);
+    }
+
+    function removeClientMilestone(msIdx) {
+        const next = {...selectedClient};
+        next.milestones.splice(msIdx, 1);
+        // next.modified = true;
+        setSaveButtonDisabled(false);
+        setSelectedClient(next);
     }
 
     return <>
@@ -152,7 +161,7 @@ function UserMilestones() {
                         selectedClient.milestones.map((ms, msIdx) =>
                             <tr key={msIdx}>
                                 <td>{`${ms.definition}`}</td>
-                                <td>{`${ms.expected}`}</td>
+                                <td>{`${ms.expected ? ms.expected : ''}`}</td>
                                 <td>
                                     <input 
                                         type="checkbox" 
@@ -161,6 +170,9 @@ function UserMilestones() {
                                         onChange={(e) => handleCompletedChange(e, ms)}
                                         checked={ms.completed}
                                     />
+                                </td>
+                                <td>
+                                    <button onClick={() => removeClientMilestone(msIdx)}>X</button>
                                 </td>
                             </tr>
                         )

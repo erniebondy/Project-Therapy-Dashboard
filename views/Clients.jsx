@@ -13,12 +13,22 @@ function Clients() {
     const [clientOptVal, setClientOptVal] = useState('default');
     const [clientDetails, setClientDetails] = useState('');
     const [selectedClient, setSelectedClient] = useState(null);
+    const [clientMilestones, setClientMilestones] = useState(null);
 
     useEffect(() => {
-        getUserClients();
+        fetchUserClients();
     }, []);
 
-    async function getUserClients() {
+    async function fetchClientMilestones(clientId) {
+        
+        const rsp = await fetch(`${API_URL}/user/${userId}/client/${clientId}/milestone`);
+        const {data} = await rsp.json();
+
+        console.log("milestones:", data);
+        return data;
+    }
+
+    async function fetchUserClients() {
         const rsp = await fetch(`${API_URL}/user/${userId}/clients`);
         const {data} = await rsp.json();
         setUserClients(data);
@@ -30,7 +40,7 @@ function Clients() {
     //     setClientDetails((data) ? data : '');
     // }
 
-    function tableRowClick(ev, client) {
+    async function tableRowClick(ev, client) {
         const {target} = ev;
         
         if (target.parentElement.nodeName !== 'TR')
@@ -41,10 +51,15 @@ function Clients() {
         
         // Change background-color of target row
         target.parentElement.style.backgroundColor = 'powderblue';
-        
+
+        console.log('client', client);
+
+        const clientMs = await fetchClientMilestones(client.id);
+
         setSelectedClient(client);
         setClientDetails(client.details);
-        //getClientDetails(client.id);
+        setClientMilestones(clientMs);
+        
     }
 
     async function showPopup(event) {
@@ -106,6 +121,8 @@ function Clients() {
             alert('Client updated!');
     }
 
+    console.log(selectedClient);
+
     return <>
 
         {/* Add client popup */}
@@ -113,7 +130,9 @@ function Clients() {
             {(clients?.length > 0) ? <>
                 <select name="clients" id="clients" value={clientOptVal} onChange={(e) => setClientOptVal(e.target.value)}>
                     <option value="default" disabled hidden>Select Client</option>
-                    {clients.map(client => <option key={client.id} value={client.id}>{`${client.fullname} (${client.age})`}</option>)}
+                    {clients.map(client => 
+                        <option key={client.id} value={client.id}>{`${client.fullname} (${client.age})`}</option>)
+                    }
                 </select>
                 <br />                
                 <button popoverTarget='client-list-popup' popoverTargetAction='hide' onClick={
@@ -174,6 +193,25 @@ function Clients() {
                 </div>
                 <div id="milestones" style={{border: '1px solid red'}}>
                     <h4>Milestones</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Definition</th>
+                                <th>Expected Completion Date</th>
+                                <th>Actual Completion Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {/* ADD CONDITIONAL FORMATTING TO MARK COMPLETED MILESTONES */}
+                            {(clientMilestones?.length > 0) && clientMilestones.map(ms => {
+                                return <tr key={ms.id}>
+                                    <td>{`${ms.definition}`}</td>
+                                    <td>{`${ms.expected ?? '---'}`}</td>
+                                    <td>{`${ms.actual ?? '---'}`}</td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
                     {/* <button onClick={() => addMilestone(selectedClient.id)}>Add</button> */}
                     {/* Definition | Expected Completion Date | Actual Completion Date */}
                 </div>

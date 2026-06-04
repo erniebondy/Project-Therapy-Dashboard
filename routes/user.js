@@ -5,7 +5,25 @@ const sql = require('sqlite3');
 
 const dbPath = './db/dev.sqlite3';
 
-// Make Enum class
+router.get('/:userId/client/:clientId/milestone', (req, rsp) => {
+    const {userId, clientId} = req.params;
+    console.log('userId', userId);
+    console.log('clientId', clientId);
+
+    const db = new sql.Database(dbPath);
+    db.all(`SELECT * FROM CLIENT_MILESTONES CM
+            LEFT JOIN MILESTONES M ON CM.milestone_id = M.id
+            WHERE CM.user_id = ? AND CM.client_id = ?`, [userId, clientId],
+        function(err, rows) {
+            if (err) {
+                console.error('DB ERROR!', err);
+                return rsp.send({data: null});
+            }
+            return rsp.send({data: rows});
+        }
+    );
+
+});
 
 router.put('/client/milestones', async (req, rsp) => {
     const {userId, selectedClient: client} = req.body;
@@ -16,6 +34,21 @@ router.put('/client/milestones', async (req, rsp) => {
         return rsp.send({ok: true});
 
     const db = new sql.Database(dbPath);
+    const msIds = client.milestones.map(ms => ms.id);
+
+    if (msIds.length > 0) {
+        const params = [userId, client.id, ...msIds];
+        const placeholder = '?,'.repeat(msIds.length).split(',').slice(0, -1).join();
+        db.all(`DELETE FROM CLIENT_MILESTONES 
+                WHERE user_id = ? 
+                AND client_id = ? 
+                AND milestone_id NOT IN (${placeholder})`, params, function (err, rows) {
+            if (err) {
+                console.error('DB ERROR!', err);
+                return rsp.send({ok: false});
+            }
+        });
+    }
     
     // Insert new milestones
     const newMs = client.milestones.filter(ms => ms.dbAction === 1); // New
@@ -87,7 +120,9 @@ router.get('/:userId/client/:clientId/milestones', (req, rsp) => {
             console.error('DB ERROR!', err);
             return rsp.send({data: null});
         }
-        for (const r of rows) r.dbAction = 0;
+        for (const r of rows)
+            r.dbAction = 0;
+
         rsp.send({data: rows});
     });
 });
@@ -297,7 +332,7 @@ router.get('/:id/clients', async (req, rsp) => {
                 ,strftime('%Y', date()) - strftime('%Y', dob) AS age
                 ,CD.details
             FROM CLIENTS C
-            LEFT JOIN USERS_CLIENTS UC on C.id = UC.client_id
+            LEFT JOIN USERS_CLIENTS UC ON C.id = UC.client_id
             LEFT JOIN CLIENT_DETAILS CD ON C.id = CD.client_id AND CD.user_id = ?
             WHERE UC.user_id = ?`, [id, id], function (err, rows) {
             if (err)
