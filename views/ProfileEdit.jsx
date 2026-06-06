@@ -8,8 +8,6 @@ function ProfileEdit() {
     const {userId} = useContext(AppContext);
     const [user, setUser] = useState(null);
 
-    console.log(user);
-
     useEffect(() => {
         fetchUser();
     }, []);

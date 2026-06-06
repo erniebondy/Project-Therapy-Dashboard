@@ -23,7 +23,6 @@ function Login() {
         const rsp = await fetch(`${API_URL}/login/${username}/${password}`);
         const {ok, userId} = await rsp.json();
 
-        console.log('ok userId', ok, userId);
         if (ok) {
             setUserId(userId);
             navigate('/profile');

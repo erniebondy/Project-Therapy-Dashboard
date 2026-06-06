@@ -90,27 +90,6 @@ app.get('/login/:username/:password', (req, rsp) => {
 
 });
 
-// app.post('/login', async (req, rsp) => {
-//     const {username, password} = req.body;
-//     console.log('posting', username, password);
-
-//     try {        
-//         const salt = crypto.randomBytes(16).toString('base64');
-//         const hashedPassword = crypto.pbkdf2Sync(password, salt,310000, 32, 'sha256').toString('base64');
-//         const db = new sql.Database(dbPath);
-//         const params = [username, hashedPassword, salt];
-//         db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES (?, ?, ?)', params, function (err) {
-//             if (err)
-//                 throw new Error(err.message);
-//             rsp.send({ok: true});
-//         });
-
-//     } catch (err) {
-//         console.log('DB ERROR!', err);
-//         rsp.send({ok: false});
-//     }
-// });
-
 app.listen(port, () => {
     console.log('Server is listening!');
 });
