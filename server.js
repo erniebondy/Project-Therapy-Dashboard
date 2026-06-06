@@ -5,7 +5,7 @@ const sql = require('sqlite3');
 const crypto = require('node:crypto');
 
 const app = express();
-const port = import.meta.env.VITE_PORT;
+const port = 3000; //import.meta.env.VITE_PORT;
 const dbPath = './db/dev.sqlite3';
 
 // Middleware

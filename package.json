@@ -4,6 +4,8 @@
   "description": "",
   "main": "",
   "scripts": {
+    "build": "vite build",
+    "preview": "vite preview",
     "start": "concurrently \"npm run dev\" \"npm run server\"",
     "dev": "vite",
     "server": "node server.js",
