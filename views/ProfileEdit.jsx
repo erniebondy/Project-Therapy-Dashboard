@@ -45,10 +45,8 @@ function ProfileEdit() {
     }
 
     return <>
-        <h4>Edit</h4>
+        <h4>Edit Profile</h4>
         <label htmlFor="username">Username: </label>
-        {/* <input type="text" name="username" id="username" placeholder="username" value={user?.username ?? ''} 
-               onChange={(e) => setUser(prev => ({...prev, username: e.target.value}))}/> */}
         <input type="text" name="username" id="username" placeholder="username" defaultValue={user?.username ?? ''} />
         <br />
         <label htmlFor="email">Email: </label>

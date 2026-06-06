@@ -23,6 +23,44 @@ app.use('/user', require('./routes/user'));
 app.use('/client', require('./routes/client'));
 app.use('/admin', require('./routes/admin'));
 
+app.post('/profile/new', async (req, rsp) => {
+    const {username, email, password, phoneNumber} = req.body;
+    const db = new sql.Database(dbPath);
+
+    const row = await new Promise(res => {
+        db.get('SELECT username FROM USERS WHERE username = ?', [username], function (err, row) {
+            if (err) {
+                console.error('DB Error!');
+                return rsp.send({ok: false});
+            }
+            res(row);
+        });
+    });
+
+    if (row) {
+        console.log('Username exists!');
+        return rsp.send({ok: false, message: 'Username already exists!'});
+    }
+
+    try {        
+        const salt = crypto.randomBytes(16).toString('base64');
+        const hashedPassword = crypto.pbkdf2Sync(password, salt, 310000, 32, 'sha256').toString('base64');
+        const params = [username, hashedPassword, salt, email, phoneNumber];
+        db.run('INSERT INTO USERS (username, hashed_password, salt, email, phone_number) VALUES (?, ?, ?, ?, ?)', params, 
+            function (err) {
+                if (err)
+                    throw new Error(err.message);
+                rsp.send({ok: true});
+            }
+        );
+
+    } catch (err) {
+        console.log('DB ERROR!', err);
+        rsp.send({ok: false});
+    }
+    
+});
+
 app.get('/login/:username/:password', (req, rsp) => {
     const {username, password} = req.params;
     console.log(username, password);
@@ -52,26 +90,26 @@ app.get('/login/:username/:password', (req, rsp) => {
 
 });
 
-app.post('/login', async (req, rsp) => {
-    const {username, password} = req.body;
-    console.log('posting', username, password);
+// app.post('/login', async (req, rsp) => {
+//     const {username, password} = req.body;
+//     console.log('posting', username, password);
 
-    try {        
-        const salt = crypto.randomBytes(16).toString('base64');
-        const hashedPassword = crypto.pbkdf2Sync(password, salt,310000, 32, 'sha256').toString('base64');
-        const db = new sql.Database(dbPath);
-        const params = [username, hashedPassword, salt];
-        db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES (?, ?, ?)', params, function (err) {
-            if (err)
-                throw new Error(err.message);
-            rsp.send({ok: true});
-        });
+//     try {        
+//         const salt = crypto.randomBytes(16).toString('base64');
+//         const hashedPassword = crypto.pbkdf2Sync(password, salt,310000, 32, 'sha256').toString('base64');
+//         const db = new sql.Database(dbPath);
+//         const params = [username, hashedPassword, salt];
+//         db.run('INSERT INTO USERS (username, hashed_password, salt) VALUES (?, ?, ?)', params, function (err) {
+//             if (err)
+//                 throw new Error(err.message);
+//             rsp.send({ok: true});
+//         });
 
-    } catch (err) {
-        console.log('DB ERROR!', err);
-        rsp.send({ok: false});
-    }
-});
+//     } catch (err) {
+//         console.log('DB ERROR!', err);
+//         rsp.send({ok: false});
+//     }
+// });
 
 app.listen(port, () => {
     console.log('Server is listening!');

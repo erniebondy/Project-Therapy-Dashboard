@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import { AppContext } from '../components/App';
+import { Link } from 'react-router';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -45,9 +46,6 @@ function Login() {
     return <>
         <h2>Login</h2>
 
-        <button onClick={test}>TEST</button>
-        <br /><br />
-        
         <label htmlFor="username">Username</label>
         <input onChange={e => setUsername(e.target.value)} type="text" name="username" id="username" placeholder="username" autoComplete="username" required />
         <br />
@@ -57,9 +55,8 @@ function Login() {
         <button onClick={() => handleLogin(username, password)}>Login</button>
 
         <br />
-        <nav>
-            <a href="/">Create Account</a>
-        </nav>
+        <br />
+        <Link to={'/profile/new'}>Create Account</Link>
     </>
 }
 

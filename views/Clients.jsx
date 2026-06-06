@@ -34,12 +34,6 @@ function Clients() {
         setUserClients(data);
     }
 
-    // async function getClientDetails(clientId) {
-    //     const rsp = await fetch(`${API_URL}/user/${userId}/client/${clientId}/details`);
-    //     const {data} = await rsp.json();
-    //     setClientDetails((data) ? data : '');
-    // }
-
     async function tableRowClick(ev, client) {
         const {target} = ev;
         
@@ -120,8 +114,6 @@ function Clients() {
         if (ok)
             alert('Client updated!');
     }
-
-    console.log(selectedClient);
 
     return <>
 
@@ -212,8 +204,6 @@ function Clients() {
                             })}
                         </tbody>
                     </table>
-                    {/* <button onClick={() => addMilestone(selectedClient.id)}>Add</button> */}
-                    {/* Definition | Expected Completion Date | Actual Completion Date */}
                 </div>
             </div>
         }
