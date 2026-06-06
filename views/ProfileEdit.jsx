@@ -45,17 +45,43 @@ function ProfileEdit() {
     }
 
     return <>
-        <h4>Edit Profile</h4>
-        <label htmlFor="username">Username: </label>
-        <input type="text" name="username" id="username" placeholder="username" defaultValue={user?.username ?? ''} />
+        <div className="h4 mt-2 mb-2">Edit Profile</div>
+        {/* Username */}
+        <div className="row g-3 align-items-center">
+            <div className="col-auto">
+                <label htmlFor="username">Username: </label>
+            </div>
+            <div className="col-auto">
+                <input className="form-control mt-2" type="text" name="username" id="username" placeholder="username" defaultValue={user?.username ?? ''} />
+            </div>
+        </div>
+
+        {/* Email */}
+        <div className="row g-3 align-items-center">
+            <div className="col-auto">
+                <label htmlFor="email">Email: </label>
+            </div>
+            <div className="col-auto">
+                <input className="form-control mt-2" type="email" name="email" id="email" placeholder="email" defaultValue={user?.email ?? ''}/>
+            </div>
+        </div>
+
+        {/* Phone # */}
+        <div className="row g-3 align-items-center">
+            <div className="col-auto">
+                <label htmlFor="phone-number">Phone #: </label>
+            </div>
+            <div className="col-auto">
+                <input className="form-control mt-2" type="text" name="phone-number" id="phone-number" defaultValue={user?.phone_number ?? ''}/>
+            </div>
+        </div>
+
         <br />
-        <label htmlFor="email">Email: </label>
-        <input type="email" name="email" id="email" placeholder="email" defaultValue={user?.email ?? ''}/>
-        <br />
-        <label htmlFor="phone-number">Phone #: </label>
-        <input type="text" name="phone-number" id="phone-number" defaultValue={user?.phone_number ?? ''}/>
-        <br />
-        <button onClick={saveUser}>Save</button>
+
+        {/* Button */}
+        <div className="row g-3 align-items-center">
+            <button className="btn btn-primary" onClick={saveUser}>Save</button>    
+        </div>
     </>
 }
 

@@ -139,16 +139,17 @@ function Clients() {
             <button popoverTarget='client-list-popup' popoverTargetAction='hide' onClick={() => setClientOptVal('default')}>Cancel</button>
         </div>
 
-        <h4>Clients</h4>
+        <div className="h4 mt-2 mb-2">Clients</div>
+        <div className="mt-2 mb-2">Select client name to view details</div>
         <div className="toolbar">
-            <button popoverTarget='client-list-popup' popoverTargetAction='show' onClick={showPopup}>Add New Client</button>
+            <button className="btn btn-warning" popoverTarget='client-list-popup' popoverTargetAction='show' onClick={showPopup}>Add Client</button>
         </div>
         <br />
 
         {/* User clients table */}
         {(userClients?.length > 0) &&
             <div className="container" style={{display: 'flex'}}>
-                <table id='clients-table' style={{border: '1px solid red', borderCollapse: 'collapse', borderSpacing: 'none'}}>
+                <table id='clients-table' style={{borderCollapse: 'collapse', borderSpacing: 'none'}}>
                     <tbody>
                         {userClients.map((client) => {
                             return (
@@ -157,20 +158,20 @@ function Clients() {
                                     <td>{client.lname}</td>
                                     <td>{client.age_years}</td>
                                     <td>
-                                        <button>Edit</button>
-                                        <button onClick={() => deleteUserClient(client)}>Remove</button>
+                                        {/* <button>Edit</button> */}
+                                        <button className="btn btn-danger" onClick={() => deleteUserClient(client)}>X</button>
                                     </td>
                                 </tr>
                             );
                         })}
                     </tbody>
                 </table>
-                <div id="details" style={{border: '1px solid black'}}>
+                <div id="details" className='p-4'>
                     <h4>Details</h4>
                     {(selectedClient) && <>
                         {/* SEE OTHER USER NOTES */}
                         <p>{`${selectedClient.fullname} (${selectedClient.age})`}</p>
-                        <button onClick={saveClientDetails}>Save</button>
+                        <button className="btn btn-primary" onClick={saveClientDetails}>Save</button>
                         <br /><br />
                         <textarea name="client-details" 
                                 id="client-details" 
@@ -183,7 +184,7 @@ function Clients() {
                         ></textarea>
                     </>}
                 </div>
-                <div id="milestones" style={{border: '1px solid red'}}>
+                <div id="milestones" className='p-4'>
                     <h4>Milestones</h4>
                     <table>
                         <thead>

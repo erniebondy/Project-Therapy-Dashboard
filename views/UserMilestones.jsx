@@ -139,14 +139,14 @@ function UserMilestones() {
                     milestones.map(ms => <option key={ms.id} value={ms.id}>{`${ms.definition}`}</option>)
                 }
             </select>
-            <input type="date" name="expected-date" id="expected-date" />
-            <button onClick={addMilestone}>Add</button>
+            <input type="date" name="expected-date" id="expected-date" />{' '}
+            <button className="btn btn-primary" onClick={addMilestone}>Add</button>
         </div>
 
         {/* Client Milestones */}
         <div id="client-milestones">
             <h4>Client Milestones</h4>
-            <button disabled={saveButtonDisabled} onClick={saveClientMilestones}>Save</button>
+            <button className="btn btn-primary mb-2" disabled={saveButtonDisabled} onClick={saveClientMilestones}>Save</button>
             <table id="client-table">
                 <thead>
                     <tr>
@@ -172,7 +172,7 @@ function UserMilestones() {
                                     />
                                 </td>
                                 <td>
-                                    <button onClick={() => removeClientMilestone(msIdx)}>X</button>
+                                    <button className="btn btn-danger" onClick={() => removeClientMilestone(msIdx)}>X</button>
                                 </td>
                             </tr>
                         )

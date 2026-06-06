@@ -50,13 +50,11 @@ function Schedule() {
     tracker.setDate(1);
 
     const firstDate = new Date(tracker);
-    // console.log('firstDate', firstDate);
 
     tracker.setMonth(tracker.getMonth() + 1);
     tracker.setDate(0);
 
     const lastDate = new Date(tracker);
-    // console.log('lastDate', lastDate);
 
     const daysInMonth = lastDate.getDate();
     const firstWeekOffset = firstDate.getDay();
@@ -102,7 +100,6 @@ function Schedule() {
             else
                 next[e.target.id] = e.target.value;
 
-            //session.setItem('cellsText', JSON.stringify(prev));
             return next;
         });
 
@@ -195,10 +192,10 @@ function Schedule() {
     }
 
     return <>
-        <h3>Schedule - {getMonthName(currentDate)}</h3>
-        <button onClick={() => handleChangeCurrentDate(-1)}>{'<'}</button>
-        <button onClick={() => handleChangeCurrentDate(1)}>{'>'}</button>
-        <button disabled={disableSave} onClick={handleSaveClick}>Save</button>
+        <div className="h3 mt-2 mb-2">Schedule - {getMonthName(currentDate)}</div>
+        <button className="btn btn-secondary" onClick={() => handleChangeCurrentDate(-1)}>{'<'}</button>{' '}
+        <button className="btn btn-secondary" onClick={() => handleChangeCurrentDate(1)}>{'>'}</button>{' '}
+        <button className="btn btn-primary" disabled={disableSave} onClick={handleSaveClick}>Save</button>
         <br />
         <br />
         <div id="content" style={{display: 'flex', flexWrap: 'wrap'}}>
@@ -208,7 +205,7 @@ function Schedule() {
                 <div id='calendar-header' style={{
                     display: 'grid', 
                     gridTemplate: `${cellSize*0.25}px / repeat(${columnsCount}, ${cellSize}px)`, 
-                    border: '1px solid cyan'
+                    border: '1px solid black'
                 }}>
                     {header.map(h => <div key={h}>{h}</div>)}
                 </div>
@@ -217,17 +214,17 @@ function Schedule() {
                 <div id='calendar-body' style={{
                     display: 'grid', 
                     gridTemplate: `repeat(${rowsCount}, ${cellSize}px) / repeat(${columnsCount}, ${cellSize}px)`, 
-                    border: '1px solid red'
+                    border: '1px solid black'
                 }}>
                     {cells}
                 </div>
             </div>
 
             {/* Tasks */}
-            <div id="tasks" style={{border: '1px solid green'}}>
+            <div id="tasks" className='container'>
                 <h3>Tasks</h3>
-                <input id='task-text' type="text" />
-                <button onClick={handleAddTask}>Add</button>
+                <input id='task-text' type="text" />{' '}
+                <button className="btn btn-primary" onClick={handleAddTask}>Add</button>
                 <br /> <br />
                 {(tasks && tasks.length > 0) &&
                     <table>
@@ -254,7 +251,7 @@ function Schedule() {
                                     {/* If user should edit task */}
                                     <td>
                                         {/* <button>Save</button> */}
-                                        <button onClick={() => handleRemoveTask(i)}>Remove</button>
+                                        <button className="btn btn-danger" onClick={() => handleRemoveTask(i)}>X</button>
                                     </td>
                                 </tr>
                             })}

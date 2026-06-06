@@ -18,8 +18,8 @@ function ClientNew() {
 
         ev.preventDefault();
 
-        client.fname = 'TEST F';
-        client.lname = 'TEST L';
+        client.fname = 'TEST F222';
+        client.lname = 'TEST L222';
         client.dob = '1992-03-26';
         client.nickname = '';
 
@@ -35,18 +35,22 @@ function ClientNew() {
     }
 
     return <>
-        <h2>Add New Client</h2>
+        <div className="h4 mt-2 mb-2">Add New Client</div>
         <form onSubmit={addClient}>
-            <label htmlFor="fname">First Name</label>
-            <input type="text" name="fname" id="fname" required onChange={onChangeHandler} />
+            <input className="form-control mt-2" type="text" name="fname" id="fname" required placeholder='First Name' onChange={onChangeHandler} />
+            <input className="form-control mt-2" type="text" name="lname" id="lname" required placeholder='Last Name' onChange={onChangeHandler} />
             <br />
-            <label htmlFor="lname">Last Name</label>
-            <input type="text" name="lname" id="lname" required onChange={onChangeHandler} />
+
+            <div className="row g-3 align-items-center">
+                <div className="col-auto">
+                    <label htmlFor="date-of-birth">Date of Birth</label>
+                </div>
+                <div className="col-auto">
+                    <input className="form-control mt-2" type="date" name="dob" id="date-of-birth" required onChange={onChangeHandler} />
+                </div>
+            </div>
             <br />
-            <label htmlFor="date-of-birth">Date of Birth</label>
-            <input type="date" name="dob" id="date-of-birth" required onChange={onChangeHandler} />
-            <br />
-            <button type='submit'>Add</button>
+            <button type='submit' className="btn btn-primary">Add</button>
         </form>
     </>;
 }

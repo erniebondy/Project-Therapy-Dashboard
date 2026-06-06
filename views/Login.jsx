@@ -30,33 +30,18 @@ function Login() {
         }
     }
 
-    async function test() {
-        const username = "ernie";
-        const password = "123";
-        const rsp = await fetch(`${API_URL}/login`, {
-            method:'POST',
-            headers: {'content-type': 'application/json'},
-            body: JSON.stringify({username, password})
-        });
-
-        const {ok} = await rsp.json();
-        console.log('ok', ok);
-    }
-
     return <>
-        <h2>Login</h2>
-
-        <label htmlFor="username">Username</label>
-        <input onChange={e => setUsername(e.target.value)} type="text" name="username" id="username" placeholder="username" autoComplete="username" required />
-        <br />
-        <label htmlFor="password">Password</label>
-        <input onChange={e => setPassword(e.target.value)} type="password" name="password" id="password" required />
-        <br />
-        <button onClick={() => handleLogin(username, password)}>Login</button>
-
-        <br />
-        <br />
-        <Link to={'/profile/new'}>Create Account</Link>
+        <div className="container">
+            <div className='h2 pt-4 pb-4'>Login</div>
+            
+            <input className="form-control mt-2" onChange={e => setUsername(e.target.value)} type="text" name="username" id="username" placeholder="username" autoComplete="username" required />
+            <input className="form-control mt-2" onChange={e => setPassword(e.target.value)} type="password" name="password" id="password" placeholder='password' required />
+            <br />
+            <button type="button" className="btn btn-primary" onClick={() => handleLogin(username, password)}>Login</button>
+            <br />
+            <br />
+            <Link className='link-primary' to={'/profile/new'}>Create Account</Link>
+        </div>
     </>
 }
 
